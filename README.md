@@ -1,40 +1,27 @@
-# Internship Tracker
+## Week 1: React task dashboard (P01)
 
-Weekly deliverables for my internship, one folder or document per task, each reviewed by my mentor through GitHub.
+Responsive task list, detail view, create/edit form and routes, using mock data.
 
-## Progress
+Code: [react-task-dashboard](https://github.com/Suman748/internship-tracker/tree/main/react-task-dashboard)
 
-| Week | Topic | Deliverable | Status |
-|------|-------|-------------|--------|
-| 1 | HTTP and REST contract | [API contract](docs/API_CONTRACT.md): CRUD endpoints and payloads | Done |
+### Run it
 
-## Repository structure
+Requires [Node.js](https://nodejs.org) 18 or newer.
 
-```
-internship-tracker/
-├── docs/
-│   └── API_CONTRACT.md   # Task API: endpoints, payloads, status codes, errors
-└── README.md
+```bash
+git clone https://github.com/Suman748/internship-tracker.git
+cd internship-tracker/react-task-dashboard
+npm install
+npm run dev
 ```
 
-## Week 1: HTTP and REST contract
+Open `http://localhost:5173` in your browser.
 
-Covers JSON, HTTP methods, status codes and API design. The contract defines a `Task` resource with:
+### Routes
 
-- Create, read (list and single), update (`PUT`/`PATCH`) and delete endpoints
-- Example request and response payloads
-- The status codes used and a shared error format
-- A review checklist for frontend/backend agreement
-
-Read it here: [docs/API_CONTRACT.md](docs/API_CONTRACT.md)
-
-## Workflow
-
-1. Create a branch per task: `git checkout -b weekN-topic`
-2. Commit the deliverable with a clear message
-3. Push the branch and open a pull request
-4. Add the PR link to the tracker and address mentor feedback
-
-## Author
-
-GitHub: [@Suman748](https://github.com/Suman748)
+| Route | Screen |
+|-------|--------|
+| `/` | Task list with status filter |
+| `/tasks/new` | New task form |
+| `/tasks/:id` | Task detail |
+| `/tasks/:id/edit` | Edit task form |
