@@ -82,3 +82,7 @@ Open `http://localhost:5173` in your browser.
 ## Author
 
 GitHub: [@Suman748](https://github.com/Suman748)
+
+## Day 6 – Spring controller & service
+`GET /api/tasks` returns a JSON list of tasks.
+Run: `cd tracker-api && ./mvnw spring-boot:run`
