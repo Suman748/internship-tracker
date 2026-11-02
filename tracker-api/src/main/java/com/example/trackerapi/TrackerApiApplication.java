@@ -1,4 +1,4 @@
-package com.suman.trackerapi;
+package com.example.trackerapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
