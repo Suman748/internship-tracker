@@ -1,6 +1,7 @@
 package com.example.trackerapi.controller;
 
-import com.example.trackerapi.model.Task;
+import com.example.trackerapi.dto.TaskRequest;
+import com.example.trackerapi.dto.TaskResponse;
 import com.example.trackerapi.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,19 +20,27 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAll() {
-        return taskService.getAll();
+    public List<TaskResponse> getAll() {
+        return taskService.getAll().stream().map(TaskResponse::from).toList();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponse> getById(@PathVariable Long id) {
+        return taskService.getById(id)
+                .map(t -> ResponseEntity.ok(TaskResponse.from(t)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Task> create(@Valid @RequestBody Task task) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(task));
+    public ResponseEntity<TaskResponse> create(@Valid @RequestBody TaskRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(TaskResponse.from(taskService.create(request.toEntity())));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> update(@PathVariable Long id, @Valid @RequestBody Task task) {
-        return taskService.update(id, task)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<TaskResponse> update(@PathVariable Long id, @Valid @RequestBody TaskRequest request) {
+        return taskService.update(id, request.toEntity())
+                .map(t -> ResponseEntity.ok(TaskResponse.from(t)))
                 .orElse(ResponseEntity.notFound().build());
     }
 

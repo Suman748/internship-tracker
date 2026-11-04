@@ -20,6 +20,10 @@ public class TaskService {
         return tasks;
     }
 
+    public Optional<Task> getById(Long id) {
+        return tasks.stream().filter(t -> t.getId().equals(id)).findFirst();
+    }
+
     public Task create(Task t) {
         t.setId(counter.incrementAndGet());
         tasks.add(t);
