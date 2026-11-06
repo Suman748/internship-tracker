@@ -1,20 +1,41 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { fetchTasks } from './api/tasks';
 
 export const STATUSES = ['Not Started', 'In Progress', 'Done'];
 
-const MOCK_TASKS = [
-  { id: 1, title: 'Set up React project', description: 'Create the Vite app and install react-router-dom.', status: 'Done', owner: 'Suman S', dueDate: '2026-11-02' },
-  { id: 2, title: 'Build task list page', description: 'Show all tasks from mock data with status filter.', status: 'In Progress', owner: 'Suman S', dueDate: '2026-11-04' },
-  { id: 3, title: 'Build task detail page', description: 'Open one task by id from the URL.', status: 'Not Started', owner: 'Suman S', dueDate: '2026-11-05' },
-  { id: 4, title: 'Add task form', description: 'Create and edit tasks with validation.', status: 'Not Started', owner: 'Suman S', dueDate: '2026-11-06' },
-  { id: 5, title: 'Push to GitHub', description: 'Commit the project and open a pull request.', status: 'Not Started', owner: 'Suman S', dueDate: '2026-11-07' },
-];
+// API sends DONE / IN_PROGRESS / NOT_STARTED; the UI uses readable labels
+const toLabel = (s = '') => {
+  const key = String(s).toUpperCase().replace(/[\s-]+/g, '_');
+  return (
+    { NOT_STARTED: 'Not Started', IN_PROGRESS: 'In Progress', DONE: 'Done' }[key] || s
+  );
+};
 
 const TasksContext = createContext(null);
 export const useTasks = () => useContext(TasksContext);
 
 export function TasksProvider({ children }) {
-  const [tasks, setTasks] = useState(MOCK_TASKS);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchTasks()
+      .then((data) => {
+        if (!cancelled) {
+          setTasks(data.map((t) => ({ ...t, status: toLabel(t.status) })));
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(e.message);
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const addTask = (task) => {
     const id = Math.max(0, ...tasks.map((t) => t.id)) + 1;
@@ -24,6 +45,9 @@ export function TasksProvider({ children }) {
   const updateTask = (id, changes) =>
     setTasks(tasks.map((t) => (t.id === id ? { ...t, ...changes } : t)));
   const deleteTask = (id) => setTasks(tasks.filter((t) => t.id !== id));
+
+  if (loading) return <p className="loading">Loading tasks…</p>;
+  if (error) return <p className="error">Could not load tasks: {error}</p>;
 
   return (
     <TasksContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
