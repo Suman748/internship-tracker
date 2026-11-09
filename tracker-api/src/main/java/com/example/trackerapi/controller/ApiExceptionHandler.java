@@ -16,7 +16,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getFieldErrors().stream()
-            .map(f -> f.getField() + " " + f.getDefaultMessage())
+            .map(f -> f.getDefaultMessage())
             .collect(Collectors.joining(", "));
         return ResponseEntity.badRequest().body(new ApiError(400, "Bad Request", msg));
     }
