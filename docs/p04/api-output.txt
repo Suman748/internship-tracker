@@ -1,0 +1,8 @@
+## CREATE
+{"id":7,"title":"P04 test","description":"integration check","status":"TODO"}
+## LIST
+[{"id":5,"title":"sadasad","description":"sad","status":"TODO"},{"id":6,"title":"dsda","description":"sadad","status":"DONE"},{"id":7,"title":"P04 test","description":"integration check","status":"TODO"}]
+## UPDATE
+
+## DELETE
+HTTP 404
