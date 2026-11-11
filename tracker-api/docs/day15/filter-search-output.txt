@@ -1,0 +1,10 @@
+== all ==
+[{"id":5,"title":"sadasad","description":"sad","status":"TODO"},{"id":6,"title":"dsda","description":"sadad","status":"DONE"},{"id":7,"title":"P04 test","description":"integration check","status":"TODO"}]
+== status=TODO ==
+[{"id":5,"title":"sadasad","description":"sad","status":"TODO"},{"id":7,"title":"P04 test","description":"integration check","status":"TODO"}]
+== q=sada ==
+[{"id":5,"title":"sadasad","description":"sad","status":"TODO"},{"id":6,"title":"dsda","description":"sadad","status":"DONE"}]
+== both ==
+[{"id":5,"title":"sadasad","description":"sad","status":"TODO"}]
+== no match ==
+[]
