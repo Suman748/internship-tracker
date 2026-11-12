@@ -1,88 +1,98 @@
-# internship-tracker
+# Internship Tracker
 
-Internship deliverables, one folder per task.
+Task manager built during the internship: a **React (Vite)** front end and a **Spring Boot + PostgreSQL** REST API.
 
-| Week | Deliverable | Link | Status |
-|------|-------------|------|--------|
-| 1 | HTTP and REST contract | [API contract](docs/API_CONTRACT.md): CRUD endpoints and payloads | Done |
-| 1 | React task dashboard (P01) | [Live demo](https://suman748.github.io/internship-tracker/) · [Code](react-task-dashboard) | Done |
-
-## Repository structure
+## Project structure
 
 ```
 internship-tracker/
-├── .github/workflows/deploy.yml   # builds and publishes the dashboard to GitHub Pages
-├── docs/
-│   └── API_CONTRACT.md            # Task API: endpoints, payloads, status codes, errors
-├── react-task-dashboard/          # P01: React task dashboard (Vite + React Router)
-└── README.md
+├── react-task-dashboard/   React + Vite front end (port 5173)
+├── tracker-api/            Spring Boot REST API (port 8080)
+├── docs/                   Contracts, test output and daily evidence
+├── postman/                Postman collection and screenshots
+└── .github/workflows/      GitHub Pages deploy workflow
 ```
 
-## Week 1: HTTP and REST contract
+## Features
 
-Covers JSON, HTTP methods, status codes and API design. The contract defines a `Task` resource with:
+- Create, list, edit and delete tasks (CRUD) from the browser, stored in PostgreSQL
+- Status filter and task search: `GET /api/tasks/search?status=&q=`
+- Server-side validation and JSON error responses (400 invalid input, 404 unknown id)
+- Client-side validation that mirrors the server rules (`utils/validate.js`)
+- Error banner with Retry for server and network errors (`ErrorBanner.jsx`)
+- CORS enabled for the React dev server (`CorsConfig.java`)
+- Responsive layout for tablet and phone widths (`styles/responsive.css`)
 
-- Create, read (list and single), update (`PUT`/`PATCH`) and delete endpoints
-- Example request and response payloads
-- The status codes used and a shared error format
-- A review checklist for frontend/backend agreement
+## API endpoints
 
-Read it here: [docs/API_CONTRACT.md](docs/API_CONTRACT.md)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/tasks` | List all tasks |
+| GET | `/api/tasks/{id}` | Get one task |
+| POST | `/api/tasks` | Create a task |
+| PUT | `/api/tasks/{id}` | Update a task |
+| DELETE | `/api/tasks/{id}` | Delete a task |
+| GET | `/api/tasks/search?status=&q=` | Filter by status and search text |
 
-## Week 1: React task dashboard (P01)
+## Validation rules
 
-Responsive task list, detail view, create/edit form and routes, using mock data (no backend).
+- `title`: required, 3 to 100 characters
+- `description`: up to 500 characters
 
-### Run it online (no install)
+## How to run
 
-Open the live demo: **https://suman748.github.io/internship-tracker/**
+Open two Git Bash windows.
 
-It is rebuilt and published automatically every time `main` is updated.
-
-### Run it in the browser with Codespaces
-
-1. Click the green **Code** button, then the **Codespaces** tab, then **Create codespace on main**.
-2. In the terminal that opens:
-   ```bash
-   cd react-task-dashboard
-   npm install
-   npm run dev
-   ```
-3. Click **Open in Browser** when the port 5173 pop-up appears.
-
-### Run it on your computer
-
-Requires [Node.js](https://nodejs.org) 18 or newer.
+**1. API (backend)** – PostgreSQL must be running first.
 
 ```bash
-git clone https://github.com/Suman748/internship-tracker.git
-cd internship-tracker/react-task-dashboard
+cd ~/internship-tracker/tracker-api
+./mvnw spring-boot:run
+```
+
+Check it: open `http://localhost:8080/api/tasks` and you should see JSON.
+
+**2. Website (React)**
+
+```bash
+cd ~/internship-tracker/react-task-dashboard
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open `http://localhost:5173`.
 
-### Routes
+## Day 16 – Server errors and validation on both sides
 
-| Route | Screen |
-|-------|--------|
-| `/` | Task list with status filter |
-| `/tasks/new` | New task form |
-| `/tasks/:id` | Task detail |
-| `/tasks/:id/edit` | Edit task form |
+- Server returns JSON errors using Bean Validation and the exception handler.
+- Client validation in `react-task-dashboard/src/utils/validate.js`.
+- `ErrorBanner.jsx` shows server and network errors with a Retry button.
+- Evidence: `docs/day16/error-tests-output.txt` (empty title, short title, malformed JSON, unknown id on GET and DELETE).
 
-## Workflow
+## Day 17 – CORS, state refresh and responsive fixes
 
-1. Create a branch per task: `git checkout -b weekN-topic`
-2. Commit the deliverable with a clear message
-3. Push the branch and open a pull request
-4. Add the PR link to the tracker and address mentor feedback
+- `CorsConfig.java` allows `http://localhost:5173` for `/api/**` (GET, POST, PUT, DELETE, OPTIONS).
+- After create, update and delete the list should refetch from the API so the UI matches the database.
+- `styles/responsive.css` adds breakpoints at 768px and 480px.
+- Evidence: `docs/day17/cors-preflight-output.txt`.
+- Merged through pull request #11 (`day16-17-errors-cors`).
+
+## Testing checklist
+
+1. Submit an empty title and see the validation error.
+2. Stop the API and see the error banner with Retry.
+3. Resize the browser to phone width and check the layout.
+4. Run the curl commands in `docs/day16` and `docs/day17` with the API running.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Compilation error in `TaskSearchController.java` | Leftover merge conflict markers. Remove every `<<<<<<<`, `=======`, `>>>>>>>` line. |
+| `./mvnw: No such file` | Run `mvn spring-boot:run` instead. |
+| Port 8080 or 5173 in use | Close the old window that is still running it. |
+| Database connection error | Start PostgreSQL and check the password in `application.properties`. |
 
 ## Author
 
-GitHub: [@Suman748](https://github.com/Suman748)
-
-## Day 6 – Spring controller & service
-`GET /api/tasks` returns a JSON list of tasks.
-Run: `cd tracker-api && ./mvnw spring-boot:run`
+Suman S, GitHub: [Suman748](https://github.com/Suman748)
