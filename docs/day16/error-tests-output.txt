@@ -1,0 +1,16 @@
+# Day 16 error/invalid-input tests  (Thu Nov 12 10:09:13 IST 2026)
+
+## Empty title  (POST /api/tasks)
+API not reachable
+
+## Too short  (POST /api/tasks)
+API not reachable
+
+## Malformed JSON  (POST /api/tasks)
+API not reachable
+
+## Unknown id GET  (GET /api/tasks/999999)
+API not reachable
+
+## Unknown id DELETE  (DELETE /api/tasks/999999)
+API not reachable
