@@ -1,0 +1,22 @@
+1) Health check
+API status: 200
+
+2) CREATE via POST
+{"id":11,"title":"Demo task","description":"full stack demo","status":"TODO"}
+3) READ via GET
+{"id":11,"title":"Demo task","description":"full stack demo","status":"TODO"}
+4) UPDATE via PUT
+{"id":11,"title":"Demo task","description":"full stack demo","status":"IN_PROGRESS"}
+5) Row in PostgreSQL
+ id |   description   |   status    |   title   
+----+-----------------+-------------+-----------
+ 11 | full stack demo | IN_PROGRESS | Demo task
+(1 row)
+
+6) DELETE
+Delete status: 204
+ count 
+-------
+     0
+(1 row)
+
