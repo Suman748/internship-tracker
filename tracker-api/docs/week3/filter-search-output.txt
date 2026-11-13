@@ -1,0 +1,6 @@
+== all tasks ==
+[{"id":7,"title":"P04 test","description":"integration check","status":"TODO"},{"id":5,"title":"Full Stack","description":"Developer","status":"TODO"},{"id":6,"title":"Web Development","description":"Creater","status":"DONE"}]
+== status=TODO ==
+[{"id":7,"title":"P04 test","description":"integration check","status":"TODO"},{"id":5,"title":"Full Stack","description":"Developer","status":"TODO"}]
+== q=demo ==
+[]
