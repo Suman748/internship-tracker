@@ -1,6 +1,36 @@
 # Internship Tracker
 
-Task manager built during the internship: a **React (Vite)** front end and a **Spring Boot + PostgreSQL** REST API.
+A task manager built during the Full Stack Internship: a **React (Vite)** front end and a **Spring Boot + PostgreSQL** REST API.
+
+**Author:** Suman S ([@Suman748](https://github.com/Suman748))
+
+---
+
+## Features
+
+- Create, view, edit and delete tasks (full CRUD) from the browser
+- Search tasks by text and filter them by status
+- Loading, empty and error states in the UI
+- Confirmation dialog before deleting a task
+- Server-side validation with proper HTTP error codes (400 for invalid input)
+- Client-side validation before requests are sent
+- CORS configured for the React dev server
+- Data persisted in PostgreSQL through Spring Data JPA (survives restarts)
+- Front end deployed to GitHub Pages through GitHub Actions
+
+---
+
+## Tech stack
+
+| Layer      | Technology                                   |
+|------------|----------------------------------------------|
+| Front end  | React, Vite, JavaScript                      |
+| Back end   | Java, Spring Boot, Spring Data JPA           |
+| Database   | PostgreSQL                                   |
+| Testing    | JUnit (`TaskControllerTest`), Postman, curl  |
+| CI/CD      | GitHub Actions (deploy to GitHub Pages)      |
+
+---
 
 ## Project structure
 
@@ -8,91 +38,195 @@ Task manager built during the internship: a **React (Vite)** front end and a **S
 internship-tracker/
 ├── react-task-dashboard/   React + Vite front end (port 5173)
 ├── tracker-api/            Spring Boot REST API (port 8080)
-├── docs/                   Contracts, test output and daily evidence
+│   ├── db/schema.sql       PostgreSQL schema (tasks table)
+│   ├── docs/               Evidence, API notes and demo output per day/week
+│   └── src/                Controllers, services, entities, repositories
 ├── postman/                Postman collection and screenshots
-└── .github/workflows/      GitHub Pages deploy workflow
+├── docs/                   Project documentation (REST contract, error handling)
+├── .github/workflows/      GitHub Actions workflow (deploy to Pages)
+├── day6-output.json        Day 6 sample GET /api/tasks output
+└── README.md
 ```
 
-## Features
+---
 
-- Create, list, edit and delete tasks (CRUD) from the browser, stored in PostgreSQL
-- Status filter and task search: `GET /api/tasks/search?status=&q=`
-- Server-side validation and JSON error responses (400 invalid input, 404 unknown id)
-- Client-side validation that mirrors the server rules (`utils/validate.js`)
-- Error banner with Retry for server and network errors (`ErrorBanner.jsx`)
-- CORS enabled for the React dev server (`CorsConfig.java`)
-- Responsive layout for tablet and phone widths (`styles/responsive.css`)
+## Prerequisites
 
-## API endpoints
+- Java 17 or later
+- Maven (or use the included `./mvnw` wrapper if present)
+- Node.js 18 or later and npm
+- PostgreSQL 14 or later
+- Git
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/tasks` | List all tasks |
-| GET | `/api/tasks/{id}` | Get one task |
-| POST | `/api/tasks` | Create a task |
-| PUT | `/api/tasks/{id}` | Update a task |
-| DELETE | `/api/tasks/{id}` | Delete a task |
-| GET | `/api/tasks/search?status=&q=` | Filter by status and search text |
+---
 
-## Validation rules
+## Getting started
 
-- `title`: required, 3 to 100 characters
-- `description`: up to 500 characters
-
-## How to run
-
-Open two Git Bash windows.
-
-**1. API (backend)** – PostgreSQL must be running first.
+### 1. Clone the repository
 
 ```bash
-cd ~/internship-tracker/tracker-api
-./mvnw spring-boot:run
+git clone https://github.com/Suman748/internship-tracker.git
+cd internship-tracker
 ```
 
-Check it: open `http://localhost:8080/api/tasks` and you should see JSON.
+### 2. Set up the database
 
-**2. Website (React)**
+Create the database, then load the schema:
 
 ```bash
-cd ~/internship-tracker/react-task-dashboard
+psql -U postgres -c "CREATE DATABASE tracker;"
+psql -U postgres -d tracker -f tracker-api/db/schema.sql
+```
+
+Check the connection settings in
+`tracker-api/src/main/resources/application.properties`:
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/tracker
+spring.datasource.username=postgres
+spring.datasource.password=<your-password>
+```
+
+### 3. Run the API
+
+```bash
+cd tracker-api
+./mvnw spring-boot:run      # or: mvn spring-boot:run
+```
+
+The API starts on **http://localhost:8080**. Quick check:
+
+```bash
+curl -i http://localhost:8080/api/tasks
+```
+
+### 4. Run the front end
+
+In a second terminal:
+
+```bash
+cd react-task-dashboard
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+Open **http://localhost:5173**. Vite proxies `/api` requests to the Spring API.
 
-## Day 16 – Server errors and validation on both sides
+---
 
-- Server returns JSON errors using Bean Validation and the exception handler.
-- Client validation in `react-task-dashboard/src/utils/validate.js`.
-- `ErrorBanner.jsx` shows server and network errors with a Retry button.
-- Evidence: `docs/day16/error-tests-output.txt` (empty title, short title, malformed JSON, unknown id on GET and DELETE).
+## API reference
 
-## Day 17 – CORS, state refresh and responsive fixes
+Base URL: `http://localhost:8080/api/tasks`
 
-- `CorsConfig.java` allows `http://localhost:5173` for `/api/**` (GET, POST, PUT, DELETE, OPTIONS).
-- After create, update and delete the list should refetch from the API so the UI matches the database.
-- `styles/responsive.css` adds breakpoints at 768px and 480px.
-- Evidence: `docs/day17/cors-preflight-output.txt`.
-- Merged through pull request #11 (`day16-17-errors-cors`).
+| Method | Endpoint                        | Description                          | Success |
+|--------|---------------------------------|--------------------------------------|---------|
+| GET    | `/api/tasks`                    | List all tasks                       | 200     |
+| GET    | `/api/tasks/{id}`               | Get one task                         | 200     |
+| POST   | `/api/tasks`                    | Create a task                        | 200/201 |
+| PUT    | `/api/tasks/{id}`               | Update a task                        | 200     |
+| DELETE | `/api/tasks/{id}`               | Delete a task                        | 204     |
+| GET    | `/api/tasks/search?status=&q=`  | Filter by status and/or search text  | 200     |
 
-## Testing checklist
+### Task object
 
-1. Submit an empty title and see the validation error.
-2. Stop the API and see the error banner with Retry.
-3. Resize the browser to phone width and check the layout.
-4. Run the curl commands in `docs/day16` and `docs/day17` with the API running.
+```json
+{
+  "id": 1,
+  "title": "Demo task",
+  "description": "full stack demo",
+  "status": "TODO"
+}
+```
+
+Status values include `TODO` and `IN_PROGRESS`. Check the `Task` entity for the full list.
+
+### Example requests
+
+```bash
+# Create
+curl -X POST http://localhost:8080/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Demo task","description":"full stack demo","status":"TODO"}'
+
+# Update
+curl -X PUT http://localhost:8080/api/tasks/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Demo task","description":"full stack demo","status":"IN_PROGRESS"}'
+
+# Search and filter
+curl "http://localhost:8080/api/tasks/search?status=TODO&q=demo"
+
+# Delete
+curl -X DELETE http://localhost:8080/api/tasks/1
+```
+
+### Error responses
+
+| Case                          | Status |
+|-------------------------------|--------|
+| Missing or empty title        | 400    |
+| Invalid status value          | 400    |
+| Task id not found             | 404    |
+
+---
+
+## Database
+
+Table: `tasks` (created by `tracker-api/db/schema.sql`)
+
+| Column        | Description                      |
+|---------------|----------------------------------|
+| `id`          | Primary key, auto generated      |
+| `title`       | Task title (required)            |
+| `description` | Task details                     |
+| `status`      | `TODO`, `IN_PROGRESS`, ...       |
+
+Verify rows directly:
+
+```bash
+psql -U postgres -d tracker -c "SELECT * FROM tasks;"
+```
+
+---
+
+## Testing
+
+- **Unit/controller tests:** `cd tracker-api && ./mvnw test`
+- **Postman:** import the collection from `postman/`
+- **Scripted demo:** a bash script runs POST, GET, PUT and DELETE with curl and checks the row in PostgreSQL (output saved in `tracker-api/docs/day18-demo-output.txt`)
+
+---
+
+## Internship progress
+
+| Phase | Focus | Highlights |
+|-------|-------|-----------|
+| 1 | Foundations | React task list, REST contract, Spring controller and service (Day 6) |
+| 2 | Backend | POST/PUT/DELETE with validation, PostgreSQL + Task entity, Spring Data JPA persistence, error handling and JUnit tests |
+| 3 | Integration | Connect React to the API, create/edit/delete UI, delete confirmation, search and status filter, CORS and error handling, full-stack demo |
+
+Detailed evidence for each day is in `tracker-api/docs/` and `docs/`.
+
+---
+
+## Deployment
+
+The React front end is deployed to GitHub Pages by the workflow in
+`.github/workflows/`. Every push to `main` triggers a build and deploy.
+
+---
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| Compilation error in `TaskSearchController.java` | Leftover merge conflict markers. Remove every `<<<<<<<`, `=======`, `>>>>>>>` line. |
-| `./mvnw: No such file` | Run `mvn spring-boot:run` instead. |
-| Port 8080 or 5173 in use | Close the old window that is still running it. |
-| Database connection error | Start PostgreSQL and check the password in `application.properties`. |
+| `curl` returns status `000` | The API isn't running. Start it with `./mvnw spring-boot:run` |
+| `relation "tasks" does not exist` | Run `schema.sql` against the same database named in `application.properties` |
+| UI shows an error state | Check the API is up and the Vite proxy in `vite.config.js` points to port 8080 |
+| CORS errors in the console | Confirm the CORS config allows `http://localhost:5173` |
 
-## Author
+---
 
-Suman S, GitHub: [Suman748](https://github.com/Suman748)
+## License
+
+Created for learning purposes during an internship. Add a license here if you plan to share the code.
