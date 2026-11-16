@@ -1,232 +1,162 @@
-# Internship Tracker
+INTERNSHIP TASK TRACKER
+=======================
 
-A task manager built during the Full Stack Internship: a **React (Vite)** front end and a **Spring Boot + PostgreSQL** REST API.
+A full-stack task management app built during my internship.
+One place to create tasks, update their status, search and filter them,
+and review progress.
 
-**Author:** Suman S ([@Suman748](https://github.com/Suman748))
+Stack: React (frontend) + Spring Boot (REST API) + PostgreSQL (database)
 
----
 
-## Features
+--------------------------------------------------------------------
+1. PROBLEM
+--------------------------------------------------------------------
+Interns and mentors track daily assignments in spreadsheets, which makes
+status, links and feedback hard to follow. This app gives one place to
+manage tasks, update status and review progress.
 
-- Create, view, edit and delete tasks (full CRUD) from the browser
-- Search tasks by text and filter them by status
-- Loading, empty and error states in the UI
-- Confirmation dialog before deleting a task
-- Server-side validation with proper HTTP error codes (400 for invalid input)
-- Client-side validation before requests are sent
-- CORS configured for the React dev server
-- Data persisted in PostgreSQL through Spring Data JPA (survives restarts)
-- Front end deployed to GitHub Pages through GitHub Actions
 
----
+--------------------------------------------------------------------
+2. FEATURES
+--------------------------------------------------------------------
+- Create, view, edit and delete tasks
+- Delete with a confirmation dialog
+- Update task status
+- Filter tasks by status
+- Search tasks
+- Client-side form validation with clear error messages
+- Server-side error handling and CORS configuration
+- Responsive layout
+- Data stored in PostgreSQL using Spring Data JPA
 
-## Tech stack
 
-| Layer      | Technology                                   |
-|------------|----------------------------------------------|
-| Front end  | React, Vite, JavaScript                      |
-| Back end   | Java, Spring Boot, Spring Data JPA           |
-| Database   | PostgreSQL                                   |
-| Testing    | JUnit (`TaskControllerTest`), Postman, curl  |
-| CI/CD      | GitHub Actions (deploy to GitHub Pages)      |
-
----
-
-## Project structure
-
-```
+--------------------------------------------------------------------
+3. PROJECT STRUCTURE
+--------------------------------------------------------------------
 internship-tracker/
-├── react-task-dashboard/   React + Vite front end (port 5173)
-├── tracker-api/            Spring Boot REST API (port 8080)
-│   ├── db/schema.sql       PostgreSQL schema (tasks table)
-│   ├── docs/               Evidence, API notes and demo output per day/week
-│   └── src/                Controllers, services, entities, repositories
-├── postman/                Postman collection and screenshots
-├── docs/                   Project documentation (REST contract, error handling)
-├── .github/workflows/      GitHub Actions workflow (deploy to Pages)
-├── day6-output.json        Day 6 sample GET /api/tasks output
-└── README.md
-```
+  react-task-dashboard/   React frontend
+  tracker-api/            Spring Boot REST API
+  capstone/               Capstone scope and acceptance criteria
+    SCOPE.md
+    ACCEPTANCE.md
+  docs/                   Documentation and evidence
+  postman/                Postman collection for API testing
+  day6-output.json        Sample API output
+  README.md / README.txt  This file
 
----
 
-## Prerequisites
-
-- Java 17 or later
-- Maven (or use the included `./mvnw` wrapper if present)
+--------------------------------------------------------------------
+4. PREREQUISITES
+--------------------------------------------------------------------
 - Node.js 18 or later and npm
-- PostgreSQL 14 or later
+- Java 17 or later
+- PostgreSQL 14 or later (running locally)
 - Git
 
----
 
-## Getting started
+--------------------------------------------------------------------
+5. SETUP AND RUN
+--------------------------------------------------------------------
 
-### 1. Clone the repository
+Step 1: Clone the repository
 
-```bash
-git clone https://github.com/Suman748/internship-tracker.git
-cd internship-tracker
-```
+    git clone https://github.com/Suman748/internship-tracker.git
+    cd internship-tracker
 
-### 2. Set up the database
+Step 2: Create the database
 
-Create the database, then load the schema:
+    psql -U postgres
+    CREATE DATABASE tracker;
+    \q
 
-```bash
-psql -U postgres -c "CREATE DATABASE tracker;"
-psql -U postgres -d tracker -f tracker-api/db/schema.sql
-```
+    (Use the database name, username and password that match
+     tracker-api/src/main/resources/application.properties.)
 
-Check the connection settings in
-`tracker-api/src/main/resources/application.properties`:
+Step 3: Start the API
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/tracker
-spring.datasource.username=postgres
-spring.datasource.password=<your-password>
-```
+    cd tracker-api
+    ./mvnw spring-boot:run
 
-### 3. Run the API
+    The API starts on http://localhost:8080 by default.
+    On Windows PowerShell use:  .\mvnw spring-boot:run
 
-```bash
-cd tracker-api
-./mvnw spring-boot:run      # or: mvn spring-boot:run
-```
+Step 4: Start the frontend (in a new terminal)
 
-The API starts on **http://localhost:8080**. Quick check:
+    cd react-task-dashboard
+    npm install
+    npm run dev
 
-```bash
-curl -i http://localhost:8080/api/tasks
-```
+    Open the URL shown in the terminal (for example http://localhost:5173).
+    If the project uses Create React App, run "npm start" instead.
 
-### 4. Run the front end
+Note: The frontend must point at the API URL. If you changed the API port,
+update the API base URL in the frontend config or .env file.
 
-In a second terminal:
 
-```bash
-cd react-task-dashboard
-npm install
-npm run dev
-```
+--------------------------------------------------------------------
+6. API ENDPOINTS
+--------------------------------------------------------------------
+(Adjust paths if your controller uses different ones.)
 
-Open **http://localhost:5173**. Vite proxies `/api` requests to the Spring API.
+    GET     /api/tasks           List all tasks (supports filter and search)
+    GET     /api/tasks/{id}      Get one task
+    POST    /api/tasks           Create a task
+    PUT     /api/tasks/{id}      Update a task
+    DELETE  /api/tasks/{id}      Delete a task
 
----
+Example task JSON:
 
-## API reference
+    {
+      "title": "Write README",
+      "description": "Document setup and API",
+      "status": "IN_PROGRESS",
+      "dueDate": "2026-11-20"
+    }
 
-Base URL: `http://localhost:8080/api/tasks`
+A Postman collection is available in the postman/ folder.
 
-| Method | Endpoint                        | Description                          | Success |
-|--------|---------------------------------|--------------------------------------|---------|
-| GET    | `/api/tasks`                    | List all tasks                       | 200     |
-| GET    | `/api/tasks/{id}`               | Get one task                         | 200     |
-| POST   | `/api/tasks`                    | Create a task                        | 200/201 |
-| PUT    | `/api/tasks/{id}`               | Update a task                        | 200     |
-| DELETE | `/api/tasks/{id}`               | Delete a task                        | 204     |
-| GET    | `/api/tasks/search?status=&q=`  | Filter by status and/or search text  | 200     |
 
-### Task object
+--------------------------------------------------------------------
+7. TESTING
+--------------------------------------------------------------------
+- API: import the collection from postman/ and run the requests
+- Frontend: create, edit, delete, filter and search tasks in the browser
+- Database: check rows with
+      SELECT * FROM task;
+  (table name may differ depending on the entity mapping)
 
-```json
-{
-  "id": 1,
-  "title": "Demo task",
-  "description": "full stack demo",
-  "status": "TODO"
-}
-```
 
-Status values include `TODO` and `IN_PROGRESS`. Check the `Task` entity for the full list.
+--------------------------------------------------------------------
+8. CAPSTONE SCOPE
+--------------------------------------------------------------------
+In scope:
+- Task CRUD, status updates, filtering, form validation, README and demo
 
-### Example requests
+Out of scope:
+- User login and roles
+- Notifications and email
+- File uploads
 
-```bash
-# Create
-curl -X POST http://localhost:8080/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Demo task","description":"full stack demo","status":"TODO"}'
+Full details: capstone/SCOPE.md and capstone/ACCEPTANCE.md
+Tickets: https://github.com/Suman748/internship-tracker/issues
 
-# Update
-curl -X PUT http://localhost:8080/api/tasks/1 \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Demo task","description":"full stack demo","status":"IN_PROGRESS"}'
 
-# Search and filter
-curl "http://localhost:8080/api/tasks/search?status=TODO&q=demo"
+--------------------------------------------------------------------
+9. PROGRESS LOG (from commit history)
+--------------------------------------------------------------------
+- Days 6-9   : Controller/service layer, POST/PUT/DELETE, PostgreSQL,
+               Task entity, Spring Data JPA
+- Days 11-12 : Persistence fixes, Postgres integration
+- Day 13     : Create and edit with API calls
+- Day 14     : Delete with confirmation, end-to-end CRUD demo
+- Day 15     : Status filter and task search endpoint
+- Days 16-17 : Error handling, client validation, CORS, responsive CSS
+- Day 18     : Full-stack demo walkthrough, PostgreSQL row checks
+- Day 19     : Capstone scope and acceptance criteria
 
-# Delete
-curl -X DELETE http://localhost:8080/api/tasks/1
-```
 
-### Error responses
-
-| Case                          | Status |
-|-------------------------------|--------|
-| Missing or empty title        | 400    |
-| Invalid status value          | 400    |
-| Task id not found             | 404    |
-
----
-
-## Database
-
-Table: `tasks` (created by `tracker-api/db/schema.sql`)
-
-| Column        | Description                      |
-|---------------|----------------------------------|
-| `id`          | Primary key, auto generated      |
-| `title`       | Task title (required)            |
-| `description` | Task details                     |
-| `status`      | `TODO`, `IN_PROGRESS`, ...       |
-
-Verify rows directly:
-
-```bash
-psql -U postgres -d tracker -c "SELECT * FROM tasks;"
-```
-
----
-
-## Testing
-
-- **Unit/controller tests:** `cd tracker-api && ./mvnw test`
-- **Postman:** import the collection from `postman/`
-- **Scripted demo:** a bash script runs POST, GET, PUT and DELETE with curl and checks the row in PostgreSQL (output saved in `tracker-api/docs/day18-demo-output.txt`)
-
----
-
-## Internship progress
-
-| Phase | Focus | Highlights |
-|-------|-------|-----------|
-| 1 | Foundations | React task list, REST contract, Spring controller and service (Day 6) |
-| 2 | Backend | POST/PUT/DELETE with validation, PostgreSQL + Task entity, Spring Data JPA persistence, error handling and JUnit tests |
-| 3 | Integration | Connect React to the API, create/edit/delete UI, delete confirmation, search and status filter, CORS and error handling, full-stack demo |
-
-Detailed evidence for each day is in `tracker-api/docs/` and `docs/`.
-
----
-
-## Deployment
-
-The React front end is deployed to GitHub Pages by the workflow in
-`.github/workflows/`. Every push to `main` triggers a build and deploy.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| `curl` returns status `000` | The API isn't running. Start it with `./mvnw spring-boot:run` |
-| `relation "tasks" does not exist` | Run `schema.sql` against the same database named in `application.properties` |
-| UI shows an error state | Check the API is up and the Vite proxy in `vite.config.js` points to port 8080 |
-| CORS errors in the console | Confirm the CORS config allows `http://localhost:5173` |
-
----
-
-## License
-
-Created for learning purposes during an internship. Add a license here if you plan to share the code.
+--------------------------------------------------------------------
+10. AUTHOR
+--------------------------------------------------------------------
+Suman748 (GitHub)
+Repository: https://github.com/Suman748/internship-tracker
