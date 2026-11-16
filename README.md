@@ -1,4 +1,4 @@
-INTERNSHIP TASK TRACKER
+Internship Task Tracker
 =======================
 
 A full-stack task management app built during my internship.
