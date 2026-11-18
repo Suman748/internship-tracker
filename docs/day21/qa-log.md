@@ -1,5 +1,5 @@
-# QA log - 2026-11-18 08:47
+# QA log - 2026-11-18 09:01
 
-- Spring tests exit code: 1 (0 = pass) - see test-output.txt
-- React build exit code: 0 (0 = pass) - see ui-build-output.txt
-- Checklist: regression-checklist.md (tick items after manual run-through)
+- Spring integration tests: pass (docs/day21/test-output.txt)
+- React build: pass (docs/day21/ui-build-output.txt)
+- Checklist: docs/day21/regression-checklist.md

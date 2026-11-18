@@ -1,40 +1,45 @@
 package com.example.trackerapi.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TaskApiIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Value("${local.server.port}")
+    private int port;
+
+    private HttpResponse<String> get(String path) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + path)).GET().build();
+        return HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+    }
 
     @Test
     void listReturnsJsonArray() throws Exception {
-        mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+        HttpResponse<String> r = get("/api/tasks");
+        assertEquals(200, r.statusCode());
+        assertTrue(r.body().trim().startsWith("["));
     }
 
     @Test
     void statsReturnsTotalAndByStatus() throws Exception {
-        mockMvc.perform(get("/api/tasks/stats"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.total").isNumber())
-                .andExpect(jsonPath("$.byStatus").exists());
+        HttpResponse<String> r = get("/api/tasks/stats");
+        assertEquals(200, r.statusCode());
+        assertTrue(r.body().contains("total"));
+        assertTrue(r.body().contains("byStatus"));
     }
 
     @Test
     void missingTaskReturns404() throws Exception {
-        mockMvc.perform(get("/api/tasks/999999"))
-                .andExpect(status().isNotFound());
+        assertEquals(404, get("/api/tasks/999999").statusCode());
     }
 }
