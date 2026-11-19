@@ -59,6 +59,26 @@ The API runs at http://localhost:8080.
     cd tracker-api && ./mvnw clean verify
     cd react-task-dashboard && npm test
 
+## Capstone
+
+Full scope and acceptance criteria: [`capstone/SCOPE.md`](capstone/SCOPE.md) and [`capstone/ACCEPTANCE.md`](capstone/ACCEPTANCE.md).
+Tickets: https://github.com/Suman748/internship-tracker/issues
+
+## Progress Log
+
+| Days  | Work |
+|-------|------|
+| 6-9   | Controller/service layer, POST/PUT/DELETE, PostgreSQL, Task entity, Spring Data JPA |
+| 11-12 | Persistence fixes, Postgres integration |
+| 13    | Create and edit with API calls |
+| 14    | Delete with confirmation, end-to-end CRUD demo |
+| 15    | Status filter and task search endpoint |
+| 16-17 | Error handling, client validation, CORS, responsive CSS |
+| 18    | Full-stack demo walkthrough, PostgreSQL row checks |
+| 19    | Capstone scope and acceptance criteria |
+| 20    | Final full-stack feature (task stats) |
+| 21    | Integration tests, regression checklist, QA log |
+
 ## Author
 
 Suman S (@Suman748)
