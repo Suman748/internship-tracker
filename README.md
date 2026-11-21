@@ -120,6 +120,9 @@ Tickets: https://github.com/Suman748/internship-tracker/issues
 | 19    | Capstone scope and acceptance criteria |
 | 20    | Final full-stack feature (task stats) |
 | 21    | Integration tests, regression checklist, QA log |
+| 22 | README polish with setup, endpoints and project structure |
+| 23 | QA smoke test (10 checks), run instructions, fresh-clone verification |
+| 24 | Final demo, README, schema and API handover |
 
 ## Author
 
