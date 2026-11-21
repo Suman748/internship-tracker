@@ -92,7 +92,8 @@ The API runs at http://localhost:8080.
 | Method | Endpoint          | Description    |
 |--------|-------------------|----------------|
 | GET    | /api/tasks        | List all tasks |
-| POST   | /api/tasks        | Create a task  |
+    status      VARCHAR(30)  NOT NULL DEFAULT 'TODO',
+    created_at  TIMESTAMP    NOT NULL DEFAULT now()
 | PUT    | /api/tasks/{id}   | Update a task  |
 | DELETE | /api/tasks/{id}   | Delete a task  |
 
@@ -127,3 +128,17 @@ Tickets: https://github.com/Suman748/internship-tracker/issues
 ## Author
 
 Suman S (@Suman748)
+
+## Database schema
+
+Table `tasks` in database `trackerdb`:
+
+```sql
+CREATE TABLE tasks (
+    id          BIGSERIAL PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    description TEXT,
+    status      VARCHAR(30)  NOT NULL DEFAULT 'TODO',
+    created_at  TIMESTAMP    NOT NULL DEFAULT now()
+);
+```
